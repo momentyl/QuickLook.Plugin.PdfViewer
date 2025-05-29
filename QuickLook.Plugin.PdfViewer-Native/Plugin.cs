@@ -1,4 +1,4 @@
-﻿// Copyright © 2024 ema
+﻿// Copyright © 2017-2025 QL-Win Contributors
 //
 // This file is part of QuickLook program.
 //
@@ -25,6 +25,9 @@ namespace QuickLook.Plugin.PDFViewerNative;
 
 public class Plugin : IViewer
 {
+    private static double _width = 1000;
+    private static double _height = 1200;
+
     public int Priority => 1;
 
     private WebpagePanel _panel;
@@ -44,7 +47,7 @@ public class Plugin : IViewer
 
     public void Prepare(string path, ContextObject context)
     {
-        context.PreferredSize = new Size(1280, 720);
+        context.SetPreferredSizeFit(new Size(_width, _height), 0.9d);
     }
 
     public void View(string path, ContextObject context)
@@ -59,6 +62,12 @@ public class Plugin : IViewer
 
     public void Cleanup()
     {
+        _width = _panel.ActualWidth;
+        _height = _panel.ActualHeight;
+
+        _panel?.Dispose();
+        _panel = null;
+
         GC.SuppressFinalize(this);
     }
 }
