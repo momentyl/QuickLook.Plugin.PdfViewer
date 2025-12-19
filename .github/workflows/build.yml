@@ -5,7 +5,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # 已更新为 v4
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive  # 关键修复：必须递归下载子模块，否则编译会缺文件！
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1
@@ -14,13 +16,13 @@ jobs:
       run: nuget restore QuickLook.Plugin.PdfViewer-Native.sln
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2 # 已更新为 v2
+      uses: microsoft/setup-msbuild@v2
 
     - name: Build Solution
       run: msbuild QuickLook.Plugin.PdfViewer-Native.sln /p:Configuration=Release /p:Platform=x86
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4 # 关键修改：已更新为 v4
+      uses: actions/upload-artifact@v4
       with:
         name: PDFViewer-FitWidth
         path: Build/Release/
