@@ -59,7 +59,14 @@ public class WebpagePanel : UserControl
     {
         var uri = Path.IsPathRooted(path) ? Helper.FilePathToFileUrl(path) : new Uri(path);
 
-        NavigateToUri(uri);
+        // --- 修改开始：拼接 #view=FitH 参数 ---
+        // 获取绝对 URI 字符串并附加参数
+        // #view=FitH 表示 "Fit Horizontal" (适合宽度)
+        var newUriString = uri.AbsoluteUri + "#view=FitH";
+        var finalUri = new Uri(newUriString);
+        // --- 修改结束 ---
+
+        NavigateToUri(finalUri);
     }
 
     public void NavigateToUri(Uri uri)
