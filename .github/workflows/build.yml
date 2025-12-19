@@ -7,7 +7,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        submodules: recursive  # 关键修复：必须递归下载子模块，否则编译会缺文件！
+        submodules: recursive
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1
@@ -18,8 +18,17 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
+    # 新增步骤：强制生成一个合法的版本文件，绕过 Git 哈希检测
+    - name: Force Valid GitVersion
+      run: |
+        echo 'using System.Reflection;' > GitVersion.cs
+        echo '[assembly: AssemblyVersion("1.0.0.0")]' >> GitVersion.cs
+        echo '[assembly: AssemblyFileVersion("1.0.0.0")]' >> GitVersion.cs
+      shell: bash
+
     - name: Build Solution
-      run: msbuild QuickLook.Plugin.PdfViewer-Native.sln /p:Configuration=Release /p:Platform=x86
+      # 修改点：添加 /p:PreBuildEvent="" 以禁用原有导致报错的脚本
+      run: msbuild QuickLook.Plugin.PdfViewer-Native.sln /p:Configuration=Release /p:Platform=x86 /p:PreBuildEvent=""
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
